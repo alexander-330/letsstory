@@ -1,0 +1,1263 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="LetsStory Studio - Capture Every Beautiful Moment. Studio fotografi premium Wedding, Prewedding, Graduation, Family &amp; lebih di Indonesia.">
+    <title>LETSSTORY • Studio Foto Premium</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='40' fill='none' stroke='%23d4af37' stroke-width='8'/%3E%3Ccircle cx='50' cy='50' r='15' fill='%23d4af37'/%3E%3C/svg%3E">
+    <style>
+        :root {
+            --bg: #0a0a0a;
+            --text: #f5f5f5;
+            --accent: #d4af37;
+            --card: #111111;
+            --border: #222222;
+        }
+        
+        .light-mode {
+            --bg: #f8f8f8;
+            --text: #111111;
+            --accent: #b38b2e;
+            --card: #ffffff;
+            --border: #e5e5e5;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        .cursor {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--accent);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            mix-blend-mode: difference;
+            transition: transform 0.1s ease, width 0.2s, height 0.2s;
+            display: none;
+        }
+
+        @media (pointer: fine) {
+            .cursor {
+                display: block;
+            }
+        }
+
+        #loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            transition: opacity 1s ease;
+        }
+
+        .camera-logo {
+            width: 120px;
+            height: 120px;
+            animation: cameraPulse 2s infinite;
+        }
+
+        @keyframes cameraPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+        }
+
+        .progress-container {
+            width: 300px;
+            height: 3px;
+            background: var(--border);
+            margin-top: 40px;
+            border-radius: 9999px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--accent), #fff);
+            transition: width 0.3s ease;
+        }
+
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(20px);
+            z-index: 1000;
+            transition: all 0.4s ease;
+        }
+
+        .light-mode nav {
+            background: rgba(248, 248, 248, 0.95);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: var(--accent);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--accent);
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .theme-toggle {
+            background: none;
+            border: none;
+            color: var(--text);
+            font-size: 1.4rem;
+            cursor: pointer;
+        }
+
+        #hero {
+            height: 100vh;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            overflow: hidden;
+        }
+
+        .hero-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            transition: opacity 1.5s ease;
+        }
+
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.7));
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 900px;
+            padding: 0 20px;
+        }
+
+        .hero-content h1 {
+            font-size: clamp(3rem, 8vw, 6rem);
+            font-weight: 700;
+            letter-spacing: -2px;
+            margin-bottom: 1rem;
+            line-height: 1.1;
+        }
+
+        .hero-content p {
+            font-size: 1.4rem;
+            margin-bottom: 2.5rem;
+            opacity: 0.9;
+        }
+
+        .btn {
+            padding: 16px 42px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 9999px;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: #111;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(212, 175, 55, 0.3);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: white;
+            border: 2px solid white;
+        }
+
+        .btn-outline:hover {
+            background: white;
+            color: #111;
+        }
+
+        section {
+            padding: 120px 5%;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            font-size: 3rem;
+            text-align: center;
+            margin-bottom: 4rem;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background: var(--accent);
+        }
+
+        #about {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 5rem;
+            align-items: center;
+        }
+
+        .about-img {
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+        }
+
+        .about-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.8s ease;
+        }
+
+        .about-img:hover img {
+            transform: scale(1.08);
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.8rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        #services {
+            background: #111;
+        }
+
+        .light-mode #services {
+            background: #f0f0f0;
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        .service-card {
+            background: var(--card);
+            border-radius: 20px;
+            padding: 2.5rem 2rem;
+            text-align: center;
+            transition: all 0.5s cubic-bezier(0.4, 0.0, 0.2, 1);
+            border: 1px solid var(--border);
+        }
+
+        .service-card:hover {
+            transform: translateY(-20px);
+            box-shadow: 0 30px 60px rgba(212, 175, 55, 0.15);
+        }
+
+        .service-icon {
+            width: 70px;
+            height: 70px;
+            background: rgba(212, 175, 55, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            font-size: 2rem;
+        }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+        }
+
+        .price-card {
+            background: var(--card);
+            border-radius: 24px;
+            padding: 3rem 2rem;
+            text-align: center;
+            position: relative;
+            transition: all 0.4s ease;
+            border: 1px solid var(--border);
+        }
+
+        .price-card.best {
+            transform: scale(1.08);
+            border-color: var(--accent);
+            box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.2);
+        }
+
+        .price-card.best::before {
+            content: "BEST CHOICE";
+            position: absolute;
+            top: -14px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--accent);
+            color: #111;
+            padding: 6px 24px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            border-radius: 9999px;
+        }
+
+        .price {
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin: 1rem 0;
+        }
+
+        #portfolio {
+            background: #111;
+        }
+
+        .light-mode #portfolio {
+            background: #f0f0f0;
+        }
+
+        .filter-buttons {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 3rem;
+        }
+
+        .filter-btn {
+            padding: 10px 28px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            color: var(--text);
+            border-radius: 9999px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .filter-btn.active {
+            background: var(--accent);
+            color: #111;
+            border-color: var(--accent);
+        }
+
+        .masonry-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .masonry-item {
+            position: relative;
+            border-radius: 16px;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .masonry-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.6s ease;
+        }
+
+        .masonry-item:hover img {
+            transform: scale(1.1);
+        }
+
+        #lightbox {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+        }
+
+        .lightbox-content {
+            max-width: 90%;
+            max-height: 90%;
+            position: relative;
+        }
+
+        .lightbox-content img {
+            max-width: 100%;
+            max-height: 90vh;
+            border-radius: 12px;
+            box-shadow: 0 0 80px rgba(0,0,0,0.8);
+        }
+
+        .testimonial-slider {
+            position: relative;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .testimonial-card {
+            background: var(--card);
+            padding: 3rem;
+            border-radius: 24px;
+            text-align: center;
+        }
+
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 2rem;
+        }
+
+        .team-member {
+            text-align: center;
+        }
+
+        .team-member img {
+            width: 100%;
+            height: 320px;
+            object-fit: cover;
+            border-radius: 20px;
+            margin-bottom: 1.5rem;
+        }
+
+        #booking form {
+            max-width: 700px;
+            margin: 0 auto;
+            background: var(--card);
+            padding: 3rem;
+            border-radius: 24px;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 16px;
+            margin-bottom: 1.5rem;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: var(--text);
+            font-size: 1rem;
+        }
+
+        .light-mode input, .light-mode select, .light-mode textarea {
+            background: #fff;
+            color: #111;
+        }
+
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 5rem;
+        }
+
+        .map-container {
+            height: 420px;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .faq-item {
+            margin-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .faq-question {
+            padding: 1.5rem 0;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+        }
+
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease;
+            padding-bottom: 1rem;
+        }
+
+        footer {
+            background: #000;
+            padding: 5rem 5% 2rem;
+        }
+
+        .floating-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background: #25D366;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            box-shadow: 0 10px 30px rgba(37, 211, 102, 0.4);
+            z-index: 999;
+            text-decoration: none;
+        }
+
+        .back-to-top {
+            bottom: 110px;
+            background: var(--accent);
+            color: #111;
+        }
+
+        #particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            opacity: 0.15;
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            #about {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- LOADING SCREEN -->
+    <div id="loading">
+        <svg class="camera-logo" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="60" cy="60" r="45" stroke="#d4af37" stroke-width="12"/>
+            <circle cx="60" cy="60" r="22" fill="#d4af37"/>
+            <circle cx="75" cy="45" r="8" fill="#111"/>
+        </svg>
+        <div class="progress-container">
+            <div id="progress" class="progress-bar"></div>
+        </div>
+        <p style="margin-top: 20px; font-size: 1.1rem; letter-spacing: 3px;">LETSSTORY</p>
+    </div>
+
+    <!-- NAVBAR -->
+    <nav id="navbar">
+        <div class="nav-container">
+            <a href="#" class="logo">
+                <span>LETSSTORY</span>
+            </a>
+            
+            <ul class="nav-links">
+                <li><a href="#hero" onclick="smoothScrollTo('hero')">Home</a></li>
+                <li><a href="#about" onclick="smoothScrollTo('about')">About</a></li>
+                <li><a href="#services" onclick="smoothScrollTo('services')">Services</a></li>
+                <li><a href="#pricing" onclick="smoothScrollTo('pricing')">Pricing</a></li>
+                <li><a href="#portfolio" onclick="smoothScrollTo('portfolio')">Portfolio</a></li>
+                <li><a href="#booking" onclick="smoothScrollTo('booking')">Booking</a></li>
+                <li><a href="#contact" onclick="smoothScrollTo('contact')">Contact</a></li>
+            </ul>
+
+            <div class="nav-right">
+                <button onclick="toggleTheme()" class="theme-toggle" aria-label="Toggle theme">☀️</button>
+                <button onclick="toggleMusic()" id="music-btn" class="theme-toggle" aria-label="Toggle music">♪</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- HERO -->
+    <section id="hero">
+        <div id="hero-slides" class="hero-bg" style="background-image: url('https://images.unsplash.com/photo-1606216794074-735e91aa2c92?w=2000')"></div>
+        <div class="hero-overlay"></div>
+        
+        <div class="hero-content">
+            <h1 style="color: white;">CAPTURE EVERY<br>BEAUTIFUL MOMENT</h1>
+            <p style="color: white;">Studio fotografi premium dengan cerita di setiap bidikan</p>
+            
+            <div style="margin-top: 3rem; display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap;">
+                <a href="#booking" onclick="smoothScrollTo('booking')" class="btn btn-primary">BOOK NOW</a>
+                <a href="#portfolio" onclick="smoothScrollTo('portfolio')" class="btn btn-outline">VIEW PORTFOLIO</a>
+            </div>
+        </div>
+        
+        <div style="position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%); color: white; font-size: 0.9rem; letter-spacing: 4px;">
+            SCROLL TO EXPLORE ↓
+        </div>
+    </section>
+
+    <!-- ABOUT -->
+    <section id="about">
+        <div class="about-img">
+            <img src="https://images.unsplash.com/photo-1558618666-fcd25c85ee64?w=1200" alt="LetsStory Studio" loading="lazy">
+        </div>
+        
+        <div>
+            <h2 class="section-title" style="text-align: left;">Tentang LetsStory</h2>
+            <p style="font-size: 1.25rem; margin-bottom: 2rem;">
+                LetsStory Studio hadir sejak 2014 untuk mengabadikan momen-momen terbaik dalam hidup Anda dengan kualitas premium dan sentuhan artistik yang kuat.
+            </p>
+            
+            <div class="stats">
+                <div class="stat-item">
+                    <div class="stat-number">500+</div>
+                    <div>Clients</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">1200+</div>
+                    <div>Photoshoot</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">12</div>
+                    <div>Tahun</div>
+                </div>
+            </div>
+            
+            <a href="#booking" onclick="smoothScrollTo('booking')" class="btn btn-primary" style="margin-top: 3rem;">Mulai Proyek Anda</a>
+        </div>
+    </section>
+
+    <!-- SERVICES -->
+    <section id="services">
+        <h2 class="section-title">Our Services</h2>
+        
+        <div class="services-grid">
+            <div class="service-card">
+                <div class="service-icon">💍</div>
+                <h3>Wedding Photography</h3>
+                <p>Abadikan hari bahagia Anda dengan sentuhan artistik dan emosional yang tak terlupakan.</p>
+                <button onclick="showServiceDetail(0)" class="btn btn-outline" style="margin-top: 1.5rem; font-size: 0.95rem;">Detail</button>
+            </div>
+            
+            <div class="service-card">
+                <div class="service-icon">🌅</div>
+                <h3>Prewedding</h3>
+                <p>Sesi pra-pernikahan romantis di lokasi impian Anda.</p>
+                <button onclick="showServiceDetail(1)" class="btn btn-outline" style="margin-top: 1.5rem; font-size: 0.95rem;">Detail</button>
+            </div>
+            
+            <div class="service-card">
+                <div class="service-icon">🎓</div>
+                <h3>Graduation</h3>
+                <p>Capture your proudest achievement with elegance.</p>
+                <button onclick="showServiceDetail(2)" class="btn btn-outline" style="margin-top: 1.5rem; font-size: 0.95rem;">Detail</button>
+            </div>
+            
+            <div class="service-card">
+                <div class="service-icon">👨‍👩‍👧</div>
+                <h3>Family</h3>
+                <p>Momen kebersamaan keluarga yang hangat dan abadi.</p>
+                <button onclick="showServiceDetail(3)" class="btn btn-outline" style="margin-top: 1.5rem; font-size: 0.95rem;">Detail</button>
+            </div>
+            
+            <div class="service-card">
+                <div class="service-icon">📦</div>
+                <h3>Product</h3>
+                <p>Fotografi produk profesional untuk brand Anda.</p>
+                <button onclick="showServiceDetail(4)" class="btn btn-outline" style="margin-top: 1.5rem; font-size: 0.95rem;">Detail</button>
+            </div>
+            
+            <div class="service-card">
+                <div class="service-icon">🎉</div>
+                <h3>Event</h3>
+                <p>Dokumentasi acara korporat dan pribadi.</p>
+                <button onclick="showServiceDetail(5)" class="btn btn-outline" style="margin-top: 1.5rem; font-size: 0.95rem;">Detail</button>
+            </div>
+            
+            <div class="service-card">
+                <div class="service-icon">👔</div>
+                <h3>Personal Branding</h3>
+                <p>Bangun citra profesional melalui foto berkualitas.</p>
+                <button onclick="showServiceDetail(6)" class="btn btn-outline" style="margin-top: 1.5rem; font-size: 0.95rem;">Detail</button>
+            </div>
+            
+            <div class="service-card">
+                <div class="service-icon">📸</div>
+                <h3>Studio Portrait</h3>
+                <p>Portrait studio dengan pencahayaan premium.</p>
+                <button onclick="showServiceDetail(7)" class="btn btn-outline" style="margin-top: 1.5rem; font-size: 0.95rem;">Detail</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- PRICING -->
+    <section id="pricing">
+        <h2 class="section-title">Our Packages</h2>
+        
+        <div class="pricing-grid">
+            <div class="price-card">
+                <h3>Basic</h3>
+                <div class="price">Rp 2,5jt</div>
+                <ul style="text-align: left; margin: 2rem 0; line-height: 2;">
+                    <li>✓ 2 jam sesi</li>
+                    <li>✓ 30 foto digital</li>
+                    <li>✓ 1 lokasi</li>
+                    <li>✓ Editing dasar</li>
+                </ul>
+                <button onclick="selectPackage(0)" class="btn btn-primary">Pilih Paket</button>
+            </div>
+            
+            <div class="price-card">
+                <h3>Standard</h3>
+                <div class="price">Rp 4,5jt</div>
+                <ul style="text-align: left; margin: 2rem 0; line-height: 2;">
+                    <li>✓ 4 jam sesi</li>
+                    <li>✓ 80 foto digital</li>
+                    <li>✓ 2 lokasi</li>
+                    <li>✓ Full editing</li>
+                    <li>✓ Album digital</li>
+                </ul>
+                <button onclick="selectPackage(1)" class="btn btn-primary">Pilih Paket</button>
+            </div>
+            
+            <div class="price-card best">
+                <h3>Premium</h3>
+                <div class="price">Rp 7,5jt</div>
+                <ul style="text-align: left; margin: 2rem 0; line-height: 2;">
+                    <li>✓ 8 jam sesi</li>
+                    <li>✓ 150 foto digital</li>
+                    <li>✓ Unlimited lokasi</li>
+                    <li>✓ Video highlight</li>
+                    <li>✓ Cetak foto premium</li>
+                    <li>✓ Album fisik</li>
+                </ul>
+                <button onclick="selectPackage(2)" class="btn btn-primary">Pilih Paket</button>
+            </div>
+            
+            <div class="price-card">
+                <h3>Exclusive</h3>
+                <div class="price">Rp 15jt+</div>
+                <ul style="text-align: left; margin: 2rem 0; line-height: 2;">
+                    <li>✓ Full day coverage</li>
+                    <li>✓ 300+ foto</li>
+                    <li>✓ Drone footage</li>
+                    <li>✓ 2 photographer</li>
+                    <li>✓ Semua fasilitas</li>
+                </ul>
+                <button onclick="selectPackage(3)" class="btn btn-primary">Hubungi Kami</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- PORTFOLIO -->
+    <section id="portfolio">
+        <h2 class="section-title">Portfolio</h2>
+        
+        <div class="filter-buttons">
+            <button class="filter-btn active" data-filter="all">All</button>
+            <button class="filter-btn" data-filter="wedding">Wedding</button>
+            <button class="filter-btn" data-filter="graduation">Graduation</button>
+            <button class="filter-btn" data-filter="family">Family</button>
+            <button class="filter-btn" data-filter="product">Product</button>
+            <button class="filter-btn" data-filter="portrait">Portrait</button>
+        </div>
+        
+        <div id="masonry-grid" class="masonry-grid"></div>
+    </section>
+
+    <!-- TESTIMONIALS -->
+    <section id="testimonials" style="background: var(--card);">
+        <h2 class="section-title">What Clients Say</h2>
+        <div class="testimonial-slider" id="testimonial-slider"></div>
+    </section>
+
+    <!-- TEAM -->
+    <section id="team">
+        <h2 class="section-title">Our Photographers</h2>
+        <div class="team-grid">
+            <div class="team-member">
+                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800" alt="Andi Pratama" loading="lazy">
+                <h3>Andi Pratama</h3>
+                <p>Lead Photographer</p>
+            </div>
+            <div class="team-member">
+                <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=800" alt="Sinta Wijaya" loading="lazy">
+                <h3>Sinta Wijaya</h3>
+                <p>Wedding Specialist</p>
+            </div>
+            <div class="team-member">
+                <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=800" alt="Rizky Nugraha" loading="lazy">
+                <h3>Rizky Nugraha</h3>
+                <p>Portrait Expert</p>
+            </div>
+            <div class="team-member">
+                <img src="https://images.unsplash.com/photo-1580489944761-09be1ec59862?w=800" alt="Laras Putri" loading="lazy">
+                <h3>Laras Putri</h3>
+                <p>Product &amp; Commercial</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- BOOKING -->
+    <section id="booking">
+        <h2 class="section-title">Book Your Session</h2>
+        <form id="booking-form" onsubmit="handleBooking(event)">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                <input type="text" id="name" placeholder="Nama Lengkap" required>
+                <input type="tel" id="phone" placeholder="Nomor WhatsApp" required>
+            </div>
+            <input type="email" id="email" placeholder="Email" required>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                <input type="date" id="date" required>
+                <input type="time" id="time" required>
+            </div>
+            <select id="service-type" required>
+                <option value="">Pilih Jenis Foto</option>
+                <option value="wedding">Wedding</option>
+                <option value="prewedding">Prewedding</option>
+                <option value="graduation">Graduation</option>
+                <option value="family">Family</option>
+                <option value="portrait">Portrait</option>
+            </select>
+            <select id="package" required>
+                <option value="">Pilih Paket</option>
+                <option value="basic">Basic - Rp 2.5jt</option>
+                <option value="standard">Standard - Rp 4.5jt</option>
+                <option value="premium">Premium - Rp 7.5jt</option>
+            </select>
+            <textarea id="message" rows="4" placeholder="Pesan tambahan..."></textarea>
+            <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">KIRIM PERMINTAAN BOOKING</button>
+        </form>
+    </section>
+
+    <!-- CONTACT -->
+    <section id="contact">
+        <h2 class="section-title">Get In Touch</h2>
+        <div class="contact-grid">
+            <div>
+                <h3>Kunjungi Studio Kami</h3>
+                <p style="margin: 1.5rem 0; font-size: 1.1rem;">
+                    Jl. Ikan Tombro Tengah Sawah,Tunjungan,Kec. Lowokwaru, Kota Malang<br>
+                    Indonesia Jawa Timur 65142
+                </p>
+                <p><strong>Jam Operasional:</strong><br>
+                Selasa - Minggu: 09.00 - 17.00<br>
+                Senin: Libur</p>
+                <div style="margin-top: 3rem;">
+                    <a href="https://wa.me/6285129506803" target="_blank" class="btn btn-primary" style="display: inline-flex; align-items: center; gap: 10px;">
+                        💬 WhatsApp Kami
+                    </a>
+                 </div>
+             <div class="map-container">
+                      <iframe
+                             src="https://www.google.com/maps?q=Letsstory%20Studio%20Self%20Photo%20Malang&output=embed"
+                              width="100%"
+                             height="100%"
+                             style="border:0;"
+                             allowfullscreen=""
+                             loading="lazy"
+                             referrerpolicy="no-referrer-when-downgrade">
+                      </iframe>
+                </div>
+             </div>
+         </section>
+
+    <!-- FAQ -->
+    <section id="faq" style="background: var(--card);">
+        <h2 class="section-title">Frequently Asked Questions</h2>
+        <div style="max-width: 800px; margin: 0 auto;">
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">Apakah harga sudah termasuk editing? <span style="font-size: 1.8rem;">+</span></div>
+                <div class="faq-answer">Ya, semua paket sudah termasuk editing profesional sesuai paket yang dipilih.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">Berapa lama proses pengambilan foto? <span style="font-size: 1.8rem;">+</span></div>
+                <div class="faq-answer">Durasi sesi bervariasi mulai dari 2 jam hingga full day tergantung paket.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">Apakah bisa shooting di luar kota? <span style="font-size: 1.8rem;">+</span></div>
+                <div class="faq-answer">Bisa. Kami melayani shooting di seluruh Indonesia dengan biaya tambahan transportasi.</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+        <div style="max-width: 1400px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 4rem;">
+            <div>
+                <h2 style="color: var(--accent);">LETSSTORY</h2>
+                <p>Studio Fotografi Premium</p>
+            </div>
+            <div>
+                <h4>Quick Links</h4>
+                <ul style="list-style: none; margin-top: 1rem;">
+                    <li><a href="#portfolio" style="color: var(--text); text-decoration: none;">Portfolio</a></li>
+                    <li><a href="#services" style="color: var(--text); text-decoration: none;">Services</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4>Connect</h4>
+                <p style="margin-top: 1rem;">Instagram @letsstory.studio</p>
+                <p>Tiktok @letsstoryfoto</p>
+            </div>
+        </div>
+        <div style="text-align: center; margin-top: 5rem; padding-top: 2rem; border-top: 1px solid #222;">
+            © 2014 LetsStory Studio. All Rights Reserved.
+        </div>
+    </footer>
+
+    <!-- FLOATING BUTTONS -->
+    <a href="https://wa.me/6281234567890" target="_blank" class="floating-btn">💬</a>
+    <button onclick="scrollToTop()" class="floating-btn back-to-top">↑</button>
+
+    <!-- LIGHTBOX -->
+    <div id="lightbox" onclick="if(event.target === this) closeLightbox()">
+        <div class="lightbox-content" onclick="event.stopImmediatePropagation()">
+            <img id="lightbox-img" src="" alt="">
+            <button onclick="closeLightbox()" style="position: absolute; top: -50px; right: 0; background: none; color: white; font-size: 2rem; border: none;">✕</button>
+        </div>
+    </div>
+
+    <!-- SUCCESS MODAL -->
+    <div id="success-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 10001; align-items: center; justify-content: center;">
+        <div style="background: var(--card); padding: 3rem; border-radius: 20px; text-align: center; max-width: 420px;">
+            <h2 style="color: var(--accent);">Terima Kasih!</h2>
+            <p>Permintaan booking Anda telah kami terima. Tim LetsStory akan menghubungi Anda segera.</p>
+            <button onclick="closeSuccessModal()" class="btn btn-primary" style="margin-top: 2rem;">Tutup</button>
+        </div>
+    </div>
+
+    <audio id="bg-music" loop>
+        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+    </audio>
+
+    <canvas id="particles" width="1920" height="1080"></canvas>
+
+    <script>
+        let currentSlide = 0;
+        let isDark = true;
+        let musicPlaying = false;
+        
+        const heroImages = [
+            "https://images.unsplash.com/photo-1606216794074-735e91aa2c92?w=2000",
+            "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=2000",
+            "https://images.unsplash.com/photo-1558618666-fcd25c85ee64?w=2000",
+            "https://images.unsplash.com/photo-1492633423870-43d1cd2775eb?w=2000"
+        ];
+        
+        const portfolioItems = [
+            {id: 1, category: "wedding", src: "https://images.unsplash.com/photo-1519741497674-611027288377?w=800"},
+            {id: 2, category: "graduation", src: "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=800"},
+            {id: 3, category: "family", src: "https://images.unsplash.com/photo-1511894155151-4a9b2c6f5f5e?w=800"},
+            {id: 4, category: "product", src: "https://images.unsplash.com/photo-1523275335684-37898b6d4d3c?w=800"},
+            {id: 5, category: "portrait", src: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800"},
+            {id: 6, category: "wedding", src: "https://images.unsplash.com/photo-1606800052059-02f5c9b5c5c5?w=800"},
+            {id: 7, category: "graduation", src: "https://images.unsplash.com/photo-1588075592446-265fd1e6e76f?w=800"},
+            {id: 8, category: "family", src: "https://images.unsplash.com/photo-1511894155151-4a9b2c6f5f5e?w=800"},
+            {id: 9, category: "portrait", src: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=800"},
+            {id: 10, category: "wedding", src: "https://images.unsplash.com/photo-1600585154340-be6161a56a9c?w=800"},
+            {id: 11, category: "product", src: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800"},
+            {id: 12, category: "portrait", src: "https://images.unsplash.com/photo-1580489944761-09be1ec59862?w=800"},
+            {id: 13, category: "wedding", src: "https://images.unsplash.com/photo-1519225429940-d7d6e2d3c3e5?w=800"},
+            {id: 14, category: "graduation", src: "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=800"},
+            {id: 15, category: "family", src: "https://images.unsplash.com/photo-160922013848-5d6a5a8c8d2b?w=800"},
+            {id: 16, category: "product", src: "https://images.unsplash.com/photo-1526170375885-4d8f1c8f5c5e?w=800"},
+            {id: 17, category: "portrait", src: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=800"},
+            {id: 18, category: "wedding", src: "https://images.unsplash.com/photo-1465495976277-4387d4b5e4a8?w=800"}
+        ];
+
+        function initCursor() {
+            const cursor = document.createElement('div');
+            cursor.className = 'cursor';
+            document.body.appendChild(cursor);
+            
+            document.addEventListener('mousemove', (e) => {
+                cursor.style.left = e.clientX + 'px';
+                cursor.style.top = e.clientY + 'px';
+            });
+            
+            document.querySelectorAll('a, button').forEach(el => {
+                el.addEventListener('mouseenter', () => cursor.style.transform = 'scale(1.8)');
+                el.addEventListener('mouseleave', () => cursor.style.transform = 'scale(1)');
+            });
+        }
+
+        function simulateLoading() {
+            let progress = 0;
+            const progressBar = document.getElementById('progress');
+            
+            const interval = setInterval(() => {
+                progress += Math.random() * 18;
+                if (progress > 100) progress = 100;
+                progressBar.style.width = progress + '%';
+                
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        document.getElementById('loading').style.opacity = '0';
+                        setTimeout(() => document.getElementById('loading').style.display = 'none', 1000);
+                    }, 400);
+                }
+            }, 80);
+        }
+
+        function startHeroSlideshow() {
+            let slideIndex = 0;
+            const slidesContainer = document.getElementById('hero-slides');
+            
+            setInterval(() => {
+                slideIndex = (slideIndex + 1) % heroImages.length;
+                slidesContainer.style.opacity = 0;
+                setTimeout(() => {
+                    slidesContainer.style.backgroundImage = `url('${heroImages[slideIndex]}')`;
+                    slidesContainer.style.opacity = 1;
+                }, 1500);
+            }, 5000);
+        }
+
+        function renderPortfolio(filter = 'all') {
+            const container = document.getElementById('masonry-grid');
+            container.innerHTML = '';
+            
+            const filtered = filter === 'all' ? portfolioItems : portfolioItems.filter(item => item.category === filter);
+            
+            filtered.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'masonry-item';
+                div.innerHTML = `<img src="${item.src}" alt="Portfolio" loading="lazy">`;
+                div.onclick = () => openLightbox(item.src);
+                container.appendChild(div);
+            });
+        }
+
+        function initFilters() {
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    renderPortfolio(btn.dataset.filter);
+                });
+            });
+        }
+
+        function openLightbox(src) {
+            document.getElementById('lightbox-img').src = src;
+            document.getElementById('lightbox').style.display = 'flex';
+        }
+
+        function closeLightbox() {
+            document.getElementById('lightbox').style.display = 'none';
+        }
+
+        function renderTestimonials() {
+            const container = document.getElementById('testimonial-slider');
+            container.innerHTML = `
+                <div class="testimonial-card">
+                    <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=120" style="width:80px;height:80px;border-radius:50%;margin-bottom:1rem;">
+                    <p style="font-style:italic; margin-bottom:1.5rem;">"Tim LetsStory sangat profesional. Hasil foto pernikahan kami sempurna!"</p>
+                    <strong>Rina & Adi</strong>
+                </div>
+            `;
+        }
+
+        function handleBooking(e) {
+            e.preventDefault();
+            document.getElementById('success-modal').style.display = 'flex';
+            e.target.reset();
+        }
+
+        function closeSuccessModal() {
+            document.getElementById('success-modal').style.display = 'none';
+        }
+
+        function toggleTheme() {
+            isDark = !isDark;
+            document.body.classList.toggle('light-mode');
+        }
+
+        let audio;
+        function toggleMusic() {
+            audio = document.getElementById('bg-music');
+            if (musicPlaying) {
+                audio.pause();
+                document.getElementById('music-btn').textContent = '♪';
+            } else {
+                audio.play().catch(() => {});
+                document.getElementById('music-btn').textContent = '❚❚';
+            }
+            musicPlaying = !musicPlaying;
+        }
+
+        function smoothScrollTo(sectionId) {
+            document.getElementById(sectionId).scrollIntoView({ behavior: "smooth" });
+        }
+
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+
+        function toggleFAQ(el) {
+            const answer = el.nextElementSibling;
+            answer.style.maxHeight = answer.style.maxHeight ? null : answer.scrollHeight + "px";
+        }
+
+        function initParticles() {
+            const canvas = document.getElementById('particles');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            
+            let particles = [];
+            
+            class Particle {
+                constructor() {
+                    this.x = Math.random() * canvas.width;
+                    this.y = Math.random() * canvas.height;
+                    this.size = Math.random() * 3 + 1;
+                    this.speedX = Math.random() * 0.5 - 0.25;
+                    this.speedY = Math.random() * 0.5 - 0.25;
+                }
+                update() {
+                    this.x += this.speedX;
+                    this.y += this.speedY;
+                    if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+                    if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+                }
+                draw() {
+                    ctx.fillStyle = '#d4af37';
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+            
+            function initParticleArray() {
+                particles = [];
+                for (let i = 0; i < 80; i++) particles.push(new Particle());
+            }
+            
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                particles.forEach(p => { p.update(); p.draw(); });
+                requestAnimationFrame(animate);
+            }
+            
+            window.addEventListener('resize', () => {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+                initParticleArray();
+            });
+            
+            initParticleArray();
+            animate();
+        }
+
+        function showServiceDetail(n) {
+            alert("Detail layanan akan ditampilkan di halaman terpisah. Terima kasih telah mengunjungi LetsStory Studio.");
+        }
+        
+        function selectPackage(n) {
+            smoothScrollTo('booking');
+        }
+
+        function initialize() {
+            simulateLoading();
+            initCursor();
+            startHeroSlideshow();
+            renderPortfolio();
+            initFilters();
+            renderTestimonials();
+            initParticles();
+            
+            window.addEventListener('scroll', () => {
+                const nav = document.getElementById('navbar');
+                nav.style.padding = window.scrollY > 100 ? '0.6rem 5%' : '1rem 5%';
+            });
+            
+            console.log('%cLETSSTORY Studio siap digunakan!', 'color:#d4af37; font-size:14px; font-weight:bold;');
+        }
+
+        window.onload = initialize;
+    </script>
+</body>
+</html>
